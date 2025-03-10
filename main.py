@@ -43,7 +43,6 @@ class app:
                 if args.debug:
                     print(f"Heading: {heading}, Distance: {seen_object}")
                 self.canvas.blit(self.background, (0, 0)) 
-                self.draw_radar_line(heading)
                 self.remove_outdated_objects(heading)
 
                 if seen_object:
@@ -51,32 +50,42 @@ class app:
 
                 for key, value in self.objects.items():
                     self.draw_object(value, key)
-
+                self.draw_background(self.canvas)
+                self.draw_radar_line(heading)
                 pygame.display.update()
         except KeyboardInterrupt:
             print("\nRadar closing")
 
     def draw_background(self, surface):
-        surface.fill((0, 0, 0))  
+        # surface.fill((0, 0, 0))  
         center = (self.width / 2, self.height - 5)
         radius = self.width / 2 * 0.95
-        thickness = max(1, self.width // 200)
+        thickness = max(1, self.width // 400)
         color = (13, 82, 2)
         
-        font = pygame.font.Font(None, int(self.width / 20))
+        font = pygame.font.Font(None, int(self.width / 40))
 
         for heading in range(-90, 91, 30):
             line_end = self.find_line_end(heading, center, radius + 20)
             
-            pygame.draw.line(surface, color, center, line_end, max(1, thickness // 2))
+            pygame.draw.line(surface, color, center, line_end, max(1, thickness))
 
-            text_surface = font.render(str(heading), True, (255, 255, 255))  # White text
+            text_surface = font.render(str(heading), True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=self.find_line_end(heading, center, radius + 30))
             surface.blit(text_surface, text_rect)
 
-        for i in range(4):
-            pygame.draw.circle(surface, color, center, int(radius), int(thickness))
-            radius -= self.width / 2 * 0.95 / 4  # Reduce radius for next circle
+        font = pygame.font.Font(None, int(self.width / 60))
+        for temp_radius, r in zip(
+            range(0, int(radius) + 1, int(radius / 4)), 
+            range(0, int(self.max_range) + 1, int(self.max_range / 4))
+        ):
+            pygame.draw.circle(surface, color, center, int(temp_radius), int(thickness))
+
+            text_surface = font.render(str(r), True, (255, 255, 255))
+            text_location = (self.width / 2, self.height - temp_radius)
+            text_rect = text_surface.get_rect(center=(text_location))
+            surface.blit(text_surface, text_rect)
+
 
     def draw_radar_line(self, heading):
         center = (self.width / 2, self.height - 5)
@@ -99,7 +108,7 @@ class app:
         radius = self.width / 2 * 0.95
         object_close_distance = (distance / self.max_range) * radius
         center = (self.width / 2, self.height - 5)
-        color = (200, 32, 32)
+        color = (180, 20, 20)
         object_close = ((self.find_line_end(heading-0.5, center, object_close_distance), self.find_line_end(heading+0.5, center, object_close_distance)))
         object_far = ((self.find_line_end(heading-0.5, center, radius), self.find_line_end(heading+0.5, center, radius)))
         pygame.draw.polygon(self.canvas, color, [object_close[0], object_close[1], object_far[1], object_far[0]])
