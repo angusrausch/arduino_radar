@@ -10,8 +10,8 @@ import simulateRadar
 import parseSerial
 
 class app:
-    width = 1000
-    height = 600
+    width = 1500
+    height = 900
     objects = {}
     max_range = 400
 
@@ -97,16 +97,18 @@ class app:
 
     def draw_object(self, distance, heading):
         radius = self.width / 2 * 0.95
-        corrected_distance = distance * (radius / self.max_range)
+        object_close_distance = (distance / self.max_range) * radius
         center = (self.width / 2, self.height - 5)
-        item_position = self.find_line_end(heading, center, corrected_distance)
-        pygame.draw.circle(self.canvas, (60, 255, 20), item_position, 7)
+        color = (200, 32, 32)
+        object_close = ((self.find_line_end(heading-0.5, center, object_close_distance), self.find_line_end(heading+0.5, center, object_close_distance)))
+        object_far = ((self.find_line_end(heading-0.5, center, radius), self.find_line_end(heading+0.5, center, radius)))
+        pygame.draw.polygon(self.canvas, color, [object_close[0], object_close[1], object_far[1], object_far[0]])
 
     def remove_outdated_objects(self, heading):
         try:
             self.objects.pop(heading)
         except KeyError:
-            pass # Expected Behaviour 
+            pass
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="SSH Config helper & send proxy keys")

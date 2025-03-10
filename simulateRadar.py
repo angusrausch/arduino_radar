@@ -9,8 +9,8 @@ class simulate:
     
     def simulate(self):
         sleep(0.01)
-        if self.heading <= -90: self.direction = 0.2
-        elif self.heading >= 90: self.direction = -0.2
+        if self.heading <= -90: self.direction = 1
+        elif self.heading >= 90: self.direction = -1
         self.heading += self.direction
 
         seen_object = self.generate_objects()
