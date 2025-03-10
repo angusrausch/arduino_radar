@@ -38,7 +38,7 @@ void loop() {
   moveServo();
   int distance = checkUltrasonic();
 
-  String output = "(" + String(heading) + "," + String(distance) + ")";
+  String output = String(heading) + "," + String(distance);
   Serial.println(output);
 
   delay(20);
