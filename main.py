@@ -6,8 +6,8 @@ import math
 import simulateRadar
 
 class app:
-    width = 500
-    height = 300
+    width = 1000
+    height = 600
     objects = {}
     max_range = 400
 
@@ -47,20 +47,29 @@ class app:
             pygame.display.update()
 
     def draw_background(self, surface):
-        surface.fill((0, 0, 0)) 
-        center = (self.width / 2, self.height)
+        surface.fill((0, 0, 0))  
+        center = (self.width / 2, self.height - 5)
         radius = self.width / 2 * 0.95
-        thickness = self.width / 200
+        thickness = max(1, self.width // 200)
         color = (13, 82, 2)
+        
+        font = pygame.font.Font(None, int(self.width / 20))
 
-        pygame.draw.line(surface, color, center, (self.width/2, self.height - radius))
-        for i in range(4):
-            pygame.draw.circle(surface, color, center, radius, int(thickness))
+        for heading in range(-90, 91, 30):
+            line_end = self.find_line_end(heading, center, radius + 20)
             
-            radius -= self.width / 2 * 0.95 / 4
+            pygame.draw.line(surface, color, center, line_end, max(1, thickness // 2))
+
+            text_surface = font.render(str(heading), True, (255, 255, 255))  # White text
+            text_rect = text_surface.get_rect(center=self.find_line_end(heading, center, radius + 30))
+            surface.blit(text_surface, text_rect)
+
+        for i in range(4):
+            pygame.draw.circle(surface, color, center, int(radius), int(thickness))
+            radius -= self.width / 2 * 0.95 / 4  # Reduce radius for next circle
 
     def draw_radar_line(self, heading):
-        center = (self.width / 2, self.height)
+        center = (self.width / 2, self.height - 5)
         radius = self.width / 2 * 0.95
         thickness = self.width / 150
         end_point = self.find_line_end(heading, center, radius)
@@ -79,7 +88,7 @@ class app:
     def draw_object(self, distance, heading):
         radius = self.width / 2 * 0.95
         corrected_distance = distance * (radius / self.max_range)
-        center = (self.width / 2, self.height)
+        center = (self.width / 2, self.height - 5)
         item_position = self.find_line_end(heading, center, corrected_distance)
         pygame.draw.circle(self.canvas, (60, 255, 20), item_position, 7)
 
