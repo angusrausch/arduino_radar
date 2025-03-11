@@ -29,8 +29,12 @@ int checkUltrasonic() {
 	digitalWrite(trigPin, HIGH);  
 	delayMicroseconds(10);  
 	digitalWrite(trigPin, LOW);
-
-  int duration = pulseIn(echoPin, HIGH);  
+  // unsigned long startTime = micros(); Debuggin
+  int duration = pulseIn(echoPin, HIGH, 2000); 
+  // unsigned long endTime = micros(); Debugging
+  // unsigned long timeDiff = endTime - startTime;  
+  // Serial.println(timeDiff);
+  if (duration == 0) return 999;
   return (duration*.0343)/2;
 }
 
